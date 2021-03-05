@@ -1,0 +1,30 @@
+version: "3"
+services:
+  database:
+    image: "mongo"
+    container_name: "mongo-container"
+    environment:
+      - MONGO_INITDB_DATABASE=justice
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=root
+    volumes:
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+      - ./mongo-volume:/data/db
+    ports:
+      - "27017"
+    networks:
+      - app-network
+  web:
+    image: "lumen"
+    container_name: "lumen-container"
+    volumes:
+    - ./storage:/var/www/html/storage
+    ports:
+      - "80:80"
+    depends_on:
+      - database
+    networks:
+      - app-network
+networks:
+  app-network:
+    driver: bridge
