@@ -49,7 +49,7 @@ class Citizen extends Model
      */
     public static function create($userId)
     {
-        return (new static)->newQuery()->create(['user_id' => $userId]);
+        return (new static)->newQuery()->create(['user_id' => $userId, 'cases' => 0]);
     }
 
     /**

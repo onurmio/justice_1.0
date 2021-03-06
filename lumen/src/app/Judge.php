@@ -21,6 +21,11 @@ class Judge extends Model
         //'updated_at'
     ];
 
+    /**
+     * Returns user id of the judge.
+     *
+     * @return mixed
+     */
     public function getId()
     {
         return $this['_id'];
@@ -59,13 +64,18 @@ class Judge extends Model
     /**
      * Creates judge.
      *
-     * @param $userId
+     * @param $params
      *
      * @return mixed
      */
-    public static function create($userId)
+    public static function create($params)
     {
-        return (new static)->newQuery()->create(['user_id' => $userId]);
+        $judge = [
+            'user_id' => $params['user_id'],
+            'register_no' => $params['register_no'],
+            'cases' => 0
+        ];
+        return (new static)->newQuery()->create($judge);
     }
 
     /**
@@ -81,9 +91,14 @@ class Judge extends Model
             'case_id' => $request['case']->getId(),
             'user_id' => $this->getUserId(),
             'content' => $request->input("content"),
-            'type' => 'judge',
+            'type' => 'judge'
         ];
         return Statement::create($statement);
+    }
+
+    public function checkRegisterNo($registerNo)
+    {
+        return $this->getRegisterNo() == $registerNo;
     }
 
     /**
@@ -105,9 +120,27 @@ class Judge extends Model
      *
      * @return mixed
      */
-    public function reOpenCase($request)
+    public function reopenCase($request)
     {
-        return $request['case']->reOpen();
+        return $request['case']->reopen();
+    }
+
+    public function addComplainant($request, $citizenNo)
+    {
+        $userId = User::find($citizenNo)->getId();
+        return $request['case']->addComplainant($userId);
+    }
+
+    public function addDefendandt($request, $citizenNo)
+    {
+        $userId = User::find($citizenNo)->getId();
+        return $request['case']->addDefendant($userId);
+    }
+
+    public function addWitness($request, $citizenNo)
+    {
+        $userId = User::find($citizenNo)->getId();
+        return $request['case']->addWitness($userId);
     }
 
 }

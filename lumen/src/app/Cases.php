@@ -14,7 +14,6 @@ class Cases extends Model
         'complainants',
         'defendants',
         'witnesses',
-        'statements',
         'closed'
     ];
 
@@ -70,13 +69,16 @@ class Cases extends Model
     }
 
     /**
-     * Returns statements id list of the case.
+     * Returns statements list of the case.
      *
      * @return mixed
      */
-    public function getStatements()
-    {
-        return $this['statements'];
+    public function getLastStatements($type){
+
+    }
+
+    public function statements(){
+        return $this->hasMany("statements", "case_id", "_id");
     }
 
     /**
@@ -92,17 +94,17 @@ class Cases extends Model
     /**
      * Creates case.
      *
-     * @param $request
+     * @param $params
      *
      * @return mixed
      */
-    public static function create($request)
+    public static function create($params)
     {
         $case = [
-            'judge_id' => $request->input("judge_id"),
-            'complainants' => $request->input("complainants"),
-            'defendants' => $request->input("defendants"),
-            'witnesses' => $request->input("witnesses"),
+            'judge_id' => $params["judge_id"],
+            'complainants' => $params["complainants"] ?? [],
+            'defendants' => $params["defendants"] ?? [],
+            'witnesses' => $params["witnesses"] ?? [],
             'completed' => false
         ];
         $case = (new static)->newQuery()->create($case);
@@ -163,7 +165,7 @@ class Cases extends Model
      */
     public function close()
     {
-        return $this->update(['closed' => true]);
+        return !$this->isClosed() ? $this->update(['closed' => true]) : false;
     }
 
     /**
@@ -171,9 +173,34 @@ class Cases extends Model
      *
      * @return bool
      */
-    public function reOpen()
+    public function reopen()
     {
-        return $this->update(['closed' => false]);
+        return $this->isClosed() ? $this->update(['closed' => false]) : false;
+    }
+
+    public function information(){
+        $case = [
+            'case_id' => $this->getId(),
+        ];
+        return $case;
+    }
+
+    public function addComplainant($userId){
+        $complainants = $this->getComplainants();
+        array_push($complainants, $userId);
+        return $this->update(['complaniants' => $complainants]);
+    }
+
+    public function addDefendant($userId){
+        $defendants = $this->getDefendants();
+        array_push($defendants, $userId);
+        return $this->update(['defendants' => $defendants]);
+    }
+
+    public function addWitness($userId){
+        $witnesses = $this->getWitnesses();
+        array_push($witnesses, $userId);
+        return $this->update(['witnesses' => $witnesses]);
     }
 }
 
