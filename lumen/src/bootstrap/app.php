@@ -74,6 +74,13 @@ $app->singleton(
 |
 */
 
+$app->routeMiddleware([
+    'auth' => App\Http\Middleware\Authenticate::class,
+    'authJudge' => App\Http\Middleware\AuthenticateJudge::class,
+    'authJudgeWithCase' => App\Http\Middleware\AuthenticateJudgeWithCase::class,
+    'authCitizen' => App\Http\Middleware\AuthenticateCitizen::class
+]);
+
 /*
 |--------------------------------------------------------------------------
 | Register Aliases
