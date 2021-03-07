@@ -19,10 +19,9 @@ class AuthenticateJudge
      */
     public function handle(Request $request, Closure $next)
     {
-        $judge = Judge::find($request->user()->getId());
+        $judge = $request->user()->judge();
         $registerNo = $request->input("register_no");
         if ($judge && $registerNo && $judge->checkRegisterNo($registerNo)) {
-            $request['judge'] = $judge;
             return $next($request);
         }
         return response(ResponseModule::create(

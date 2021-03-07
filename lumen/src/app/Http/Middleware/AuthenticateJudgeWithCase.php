@@ -20,11 +20,10 @@ class AuthenticateJudgeWithCase
      */
     public function handle(Request $request, Closure $next)
     {
-        $judge = Judge::find($request->user()->getId());
+        $judge = $request->user()->judge();
         $case = Cases::find($request->input("case_id"));
         $registerNo = $request->input("register_no");
         if ($judge && $registerNo && $judge->checkRegisterNo($registerNo) && $case &&  $case->isJudge($judge->getUserId())) {
-            $request['judge'] = $judge;
             $request['case'] = $case;
             return $next($request);
         }
