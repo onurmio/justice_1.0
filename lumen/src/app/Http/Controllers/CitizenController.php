@@ -25,4 +25,11 @@ class CitizenController extends Controller
 
         return response(ResponseModule::create(false));
     }
+
+    public function information(Request $request){
+        $user = $request->user()->toArray();
+        $citizen = $request->user()->citizen();
+        $user = array_merge($user, ['cases' => $citizen->getCasesNumber()]);
+        return response(ResponseModule::create(true, null, ['user' => $user]));
+    }
 }

@@ -21,7 +21,7 @@ class JudgeController extends Controller
         if ($validator->fails()) {
             return response(ResponseModule::validationMessage($validator->errors()));
         }
-        if ($result = $request['judge']->createStatement($request)) {
+        if ($result = $request->user()->judge()->createStatement($request)) {
             return response(ResponseModule::create(true));
         }
         return response(ResponseModule::create(false));
@@ -29,12 +29,12 @@ class JudgeController extends Controller
 
     public function createCase(Request $request)
     {
-        return Cases::create([
+        return response(ResponseModule::create(Cases::create([
             'judge_id' => $request->user()->getId(),
             'complainants' => $request->input("complainants"),
             'defendants' => $request->input("defendants"),
             'witnesses' => $request->input("witnesses")
-        ]);
+        ]) ? true : false));
     }
 
     public function reopenCase(Request $request)
@@ -47,7 +47,7 @@ class JudgeController extends Controller
         return response(ResponseModule::create($request['case']->close()));
     }
 
-    public function addComplainant($request)
+    public function addComplainant(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'citizen_no' => [
@@ -59,10 +59,10 @@ class JudgeController extends Controller
         if ($validator->fails()) {
             return response(ResponseModule::validationMessage($validator->errors()));
         }
-        return $request['judge']->addComplainant($request->input("citizen_no"));
+        return response(ResponseModule::create($request->user()->judge()->addComplainant($request, $request->input("citizen_no"))));
     }
 
-    public function addDefendandt($request)
+    public function addDefendant(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'citizen_no' => [
@@ -74,10 +74,10 @@ class JudgeController extends Controller
         if ($validator->fails()) {
             return response(ResponseModule::validationMessage($validator->errors()));
         }
-        return $request['judge']->addDefendant($request->input("citizen_no"));
+        return response(ResponseModule::create($request->user()->judge()->addDefendant($request, $request->input("citizen_no"))));
     }
 
-    public function addWitness($request)
+    public function addWitness(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'citizen_no' => [
@@ -89,11 +89,24 @@ class JudgeController extends Controller
         if ($validator->fails()) {
             return response(ResponseModule::validationMessage($validator->errors()));
         }
-        return $request['judge']->addWitness($request->input("citizen_no"));
+        return response(ResponseModule::create($request->user()->judge()->addWitness($request, $request->input("citizen_no"))));
     }
 
     public function isJudge()
     {
         return response(ResponseModule::create(true));
+    }
+
+    public function registerNo(Request $request)
+    {
+        return response(ResponseModule::create(true, null, ["register_no" => $request->user()->judge()->getRegisterNo()]));
+    }
+
+    public function information(Request $request)
+    {
+        $user = $request->user()->toArray();
+        $judge = $request->user()->judge();
+        $user = array_merge($user, ['register_no' => $judge->getRegisterNo(), 'cases' => $judge->getCasesNumber()]);
+        return response(ResponseModule::create(true, null, ['user' => $user]));
     }
 }
