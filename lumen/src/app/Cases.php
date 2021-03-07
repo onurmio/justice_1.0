@@ -73,12 +73,14 @@ class Cases extends Model
      *
      * @return mixed
      */
-    public function getLastStatements($type){
+    public function getLastStatements($type)
+    {
 
     }
 
-    public function statements(){
-        return $this->hasMany("statements", "case_id", "_id");
+    public function statements()
+    {
+        return $this->hasMany(Statement::class, "case_id", "_id");
     }
 
     /**
@@ -130,7 +132,8 @@ class Cases extends Model
      *
      * @return false|string
      */
-    public function getParticipantType($userId){
+    public function getParticipantType($userId)
+    {
         $complainants = $this->getComplainants();
         $defendants = $this->getDefendants();
         $witnesses = $this->getWitnesses();
@@ -155,7 +158,7 @@ class Cases extends Model
      */
     public function isParticipant($userId)
     {
-       return $this->getParticipantType($userId);
+        return $this->getParticipantType($userId);
     }
 
     /**
@@ -178,26 +181,30 @@ class Cases extends Model
         return $this->isClosed() ? $this->update(['closed' => false]) : false;
     }
 
-    public function information(){
+    public function information()
+    {
         $case = [
             'case_id' => $this->getId(),
         ];
         return $case;
     }
 
-    public function addComplainant($userId){
+    public function addComplainant($userId)
+    {
         $complainants = $this->getComplainants();
         array_push($complainants, $userId);
-        return $this->update(['complaniants' => $complainants]);
+        return $this->update(['complainants' => $complainants]);
     }
 
-    public function addDefendant($userId){
+    public function addDefendant($userId)
+    {
         $defendants = $this->getDefendants();
         array_push($defendants, $userId);
         return $this->update(['defendants' => $defendants]);
     }
 
-    public function addWitness($userId){
+    public function addWitness($userId)
+    {
         $witnesses = $this->getWitnesses();
         array_push($witnesses, $userId);
         return $this->update(['witnesses' => $witnesses]);

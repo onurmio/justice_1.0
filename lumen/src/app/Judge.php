@@ -131,7 +131,7 @@ class Judge extends Model
         return $request['case']->addComplainant($userId);
     }
 
-    public function addDefendandt($request, $citizenNo)
+    public function addDefendant($request, $citizenNo)
     {
         $userId = User::find($citizenNo)->getId();
         return $request['case']->addDefendant($userId);

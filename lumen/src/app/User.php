@@ -20,6 +20,7 @@ class User extends Model
 
     protected $hidden = [
         //'_id',
+        'password',
         //'created_at',
         //'updated_at'
     ];
@@ -174,6 +175,14 @@ class User extends Model
     public function checkPassword($password)
     {
         return Encryption::check($password, $this['password']);
+    }
+
+    public function judge(){
+        return $this->hasOne(Judge::class, 'user_id', '_id')->first();
+    }
+
+    public function citizen(){
+        return $this->hasOne(Citizen::class, 'user_id', '_id')->first();
     }
 }
 
